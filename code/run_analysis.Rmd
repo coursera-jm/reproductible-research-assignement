@@ -1,0 +1,121 @@
+### Reproductible Research
+#### Assignement
+by Roger D. Peng, PhD, Jeff Leek, PhD, Brian Caffo, PhD
+Coursera June 2014 session 
+  
+```{r setup, include=FALSE, echo=FALSE}
+# set global options
+opts_chunk$set(echo=FALSE, results = "hide")
+```
+
+```{r init,echo=FALSE}
+rm(list=ls())
+
+set.seed(590607)
+
+dt = Sys.time()
+date <- format(dt,"%d-%b-%Y")
+time <- format(dt,"%H:%M:%S")
+rand <- rnorm(1)
+
+#sessionInfo()
+#packageVersion("snow")
+Rversion <- version$version.string
+```
+
+<style>
+body {
+    font-size: 1.0em;
+    font-family: "Arial, Helvetica, sans-serif"";
+}
+</style>
+
+JMM, Document generated on `r date` at `r time`.
+
+#### Introduction
+
+#### Methods
+
+This analysis has been performed using R software package for statistical analysis and the following packages.
+The version of R used was `r Rversion`.
+
+
+```{r loadData, echo=FALSE}
+
+# b. load data
+
+# b.1 baseDir will be prefixing all data accesses
+baseDir <- ".."
+
+# b.2 create data sub-directory if necessary
+dataDir <- file.path(baseDir, "data")
+if(!file.exists(dataDir)) { dir.create(dataDir) }
+
+# b.3 download original data if necessary (skip if exists already as it takes time)
+# TODO: function
+#fileName <- "train"
+#fileExt <- "csv"
+#fileUrl <- ""
+#filePath <- file.path(dataDir, paste(fileName, fileExt, sep="."))
+#dateFilePath <- file.path(dataDir,paste(fileName,"_date_time_downloaded.txt",sep=""))
+#if (!file.exists(filePath)) {
+#  download.file (fileUrl, filePath, method="curl")
+#  DTDownloaded <- format(Sys.time(), "%Y-%b-%d %H:%M:%S")
+#  cat (DTDownloaded, file=dateFilePath)
+#} else {
+#  DTDownloaded <- scan(file=dateFilePath, what="character", sep="\n")
+#}
+#cat ("The training dataset is located at", filePath, "and was downloaded on downloaded on", DTDownloaded)
+
+
+# b.4 read dataset and load them in R
+#trainSetPath <- file.path (dataDir, "train.csv")
+#testSetPath <-  file.path (dataDir, "test.csv")
+#trainSet <- read.csv(trainSetPath, header = TRUE) 
+#testSet  <- read.csv(testSetPath, header = TRUE)
+#dim(trainSet)
+#dim(testSet)
+#str(trainSet)
+#str(testSet)
+#summary(trainSet)
+#summary(testSet)
+
+#file.show("")
+#head()
+
+```
+
+#### Results
+
+```{r results.simulate, echo=TRUE}
+data(airquality)
+fit <- lm(Ozone ~ Wind + Temp + Solar.R, data = airquality)
+```
+
+```{r results.fit, echo=TRUE}
+library (datasets)
+data(airquality)
+fit <- lm(Ozone ~ Wind + Temp + Solar.R, data = airquality)
+```
+
+The table of regression coefficients shows as follow:
+```{r results.coef, echo=TRUE}
+library (xtable)
+xt <- xtable(summary(fit))
+print (xt, type="html")
+```
+
+#### Discussion
+
+The test dataset provided was very limited in size (`r nrow(testSet)` rows) compared to the training set (`r nrow(trainSet)` rows), the test sample representing `r nrow(testSet)/((nrow(trainSet)+nrow(testSet)))`% of the total number of samples.
+
+#### Conclusion
+
+#### References
+
+1. R Core Team. R: A language and environment for statistical computing. URL: http://www.R-project.org. R Foundation for Statistical Computing, 2013.
+
+2. Seber, George AF, and Alan J. Lee. Linear regression analysis. Vol. 936. Wiley, 2012.
+
+3. R Markdown Page. URL: http://www.rstudio.com/ide/docs/authoring/using_markdown. 
+
