@@ -5,7 +5,7 @@ Coursera June 2014 session
   
 ```{r setup, include=FALSE, echo=FALSE}
 # set global options
-opts_chunk$set(echo=FALSE, results = "hide")
+opts_chunk$set(echo=FALSE) #, results = "hide")
 ```
 
 ```{r init,echo=FALSE}
@@ -34,6 +34,40 @@ JMM, Document generated on `r date` at `r time`.
 
 #### Introduction
 
+ 1. Loading and preprocessing the data
+
+  - Show any code that is needed to Load the data (i.e. read.csv())
+  - Process/transform the data (if necessary) into a format suitable for your analysis
+  - What is mean total number of steps taken per day?
+
+ 2. For this part of the assignment, you can ignore the missing values in the dataset.
+
+  - Make a histogram of the total number of steps taken each day
+  - Calculate and report the mean and median total number of steps taken per day
+  - What is the average daily activity pattern?
+
+3. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+  - Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+  - Imputing missing values
+
+Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
+
+4. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+  - Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+  - Create a new dataset that is equal to the original dataset but with the missing data filled in.
+  - Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+  - Are there differences in activity patterns between weekdays and weekends?
+
+For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
+
+5. Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+  - Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was creating using simulated data:
+
+Your plot will look different from the one above because you will be using the activity monitor data. Note that the above plot was made using the lattice system but you can make the same version of the plot using any plotting system you choose.
+
 #### Methods
 
 This analysis has been performed using R software package for statistical analysis and the following packages.
@@ -51,22 +85,9 @@ baseDir <- ".."
 dataDir <- file.path(baseDir, "data")
 if(!file.exists(dataDir)) { dir.create(dataDir) }
 
-# b.3 download original data if necessary (skip if exists already as it takes time)
-# TODO: function
-#fileName <- "train"
-#fileExt <- "csv"
-#fileUrl <- ""
-#filePath <- file.path(dataDir, paste(fileName, fileExt, sep="."))
-#dateFilePath <- file.path(dataDir,paste(fileName,"_date_time_downloaded.txt",sep=""))
-#if (!file.exists(filePath)) {
-#  download.file (fileUrl, filePath, method="curl")
-#  DTDownloaded <- format(Sys.time(), "%Y-%b-%d %H:%M:%S")
-#  cat (DTDownloaded, file=dateFilePath)
-#} else {
-#  DTDownloaded <- scan(file=dateFilePath, what="character", sep="\n")
-#}
-#cat ("The training dataset is located at", filePath, "and was downloaded on downloaded on", DTDownloaded)
+# download original data if necessary (skip if exists already as it takes time)
 
+#cat ("The training dataset is located at", filePath, "and was downloaded on downloaded on", DTDownloaded)
 
 # b.4 read dataset and load them in R
 #trainSetPath <- file.path (dataDir, "train.csv")
@@ -85,12 +106,22 @@ if(!file.exists(dataDir)) { dir.create(dataDir) }
 
 ```
 
-#### Results
+The variables included in this dataset are:
 
-```{r results.simulate, echo=TRUE}
-data(airquality)
-fit <- lm(Ozone ~ Wind + Temp + Solar.R, data = airquality)
+  - steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+  - date: The date on which the measurement was taken in YYYY-MM-DD format
+  - interval: Identifier for the 5-minute interval in which measurement was taken
+
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+
+We downloaded the dataset from the internat and unzipped it. Ther we used R function read.csv to read the file:
+```{r}
+dataset = data.frame()
 ```
+
+and obtained ```r nrow(dataset)```/17,568 observations as expected.
+
+#### Results
 
 ```{r results.fit, echo=TRUE}
 library (datasets)
@@ -107,7 +138,7 @@ print (xt, type="html")
 
 #### Discussion
 
-The test dataset provided was very limited in size (`r nrow(testSet)` rows) compared to the training set (`r nrow(trainSet)` rows), the test sample representing `r nrow(testSet)/((nrow(trainSet)+nrow(testSet)))`% of the total number of samples.
+The test dataset provided was very limited in size (`r #nrow(testSet)` rows) compared to the training set (`r #nrow(trainSet)` rows), the test sample representing `r #nrow(testSet)/((nrow(trainSet)+nrow(testSet)))`% of the total number of samples.
 
 #### Conclusion
 
