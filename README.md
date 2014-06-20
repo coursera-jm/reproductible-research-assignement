@@ -1,5 +1,9 @@
-Reproductible Research Assignement
-----------------------------------
+## Reproductible Research
+by Roger D. Peng, PhD, Jeff Leek, PhD, Brian Caffo, PhD
 
-Assignement 2
+Coursera - June 2014 session 
+
+Assignement 2 in https://github.com/coursera-jm/reproductible-research-assignement
+
+Published at http://rpubs.com/Jean/RepResAss2
 
