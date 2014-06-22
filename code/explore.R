@@ -29,3 +29,14 @@ if (!file.exists(zipFilePath)) {
 
 cat ("The dataset is located in", dataDir, "and was downloaded on downloaded on", DTDownloaded)
 list.files(dataDir)
+
+#subset(dataset.tidy, PROPDMGEXP == "0")$PROPDMG
+#head(subset(dataset.tidy, PROPDMGEXP=='B'))
+
+# alternate to aggregate
+dataset.casualities <- sort(tapply(dataset.tidy$CASUALITIES, dataset.tidy$EVTYPE, sum), decreasing = T)
+dataset.cost <- sort(tapply(dataset.tidy$TOTAL_COST, dataset.tidy$EVTYPE, sum), decreasing = T)
+
+All   <- cbind(tmp[,PROP_COST], tmp[,CROP_COST])
+#legend = c("Property", "Crop"))
+#pie(tmp$TOTAL_COST, labels = tmp$EVTYPE, col = rainbow(length(lbls)), main = "Economics")
