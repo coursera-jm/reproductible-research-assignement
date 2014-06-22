@@ -253,6 +253,13 @@ dataset.tidy$EVTYPE <- gsub("^WINTER WEATHER.+$","WINTER WEATHER",dataset.tidy$E
 dataset.tidy$EVTYPE <- gsub("^WINTER STORM.+$","WINTER STORM",dataset.tidy$EVTYPE)
 dataset.tidy$EVTYPE <- gsub("^WIND .+$","WIND",dataset.tidy$EVTYPE)
 dataset.tidy$EVTYPE <- gsub("WND","WIND",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("HEAT WAVE","HEAT",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("WILDFIRE","WILD FIRE",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("HIGH ","",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("EXCESSIVE ","",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("HEAVY ","",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("WINTER SNOW","SNOW",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("RIVER FLOOD","FLOOD",dataset.tidy$EVTYPE)
 dataset.tidy$EVTYPE <- gsub("^FROST.+$","FROST",dataset.tidy$EVTYPE)
 dataset.tidy$EVTYPE <- gsub("^LANDSLIDE.+$","LANDSLIDE",dataset.tidy$EVTYPE)
 #sort(unique(dataset.tidy$EVTYPE))
@@ -264,7 +271,7 @@ We have now ```r nev1``` distinct event types. Note that these transformations a
 
 #### Grouping for preparing the analysis
 
-We can now create analysis datasets by grouping the different outcome by event type, state, and year.
+We can now create analysis datasets by grouping the different outcomes by event type, state, and year.
 ```{r aggregate}
 byEvType <- subset(dataset.tidy, select=c(EVTYPE, INJURIES, FATALITIES, CASUALTIES, PROP_COST, CROP_COST, TOTAL_COST))
 byEvType <- aggregate (. ~ EVTYPE, data = byEvType, sum)
@@ -284,7 +291,7 @@ byYear <- aggregate(. ~ YEAR, data = byYear, FUN="sum")
 
 Let's add some percent for relevant columns.
 ```{r percent}
-byEvType$pctCasualities <- with(byEvType, round(CASUALTIES/sum(CASUALTIES) * 100, 2))
+byEvType$pctCasualties <- with(byEvType, round(CASUALTIES/sum(CASUALTIES) * 100, 2))
 byEvType$pctInjuries <- with(byEvType, round(INJURIES/sum(INJURIES) * 100, 2))
 byEvType$pctFatalities <- with(byEvType, round(FATALITIES/sum(FATALITIES) * 100, 2))
 byEvType$pctTotalCost <- with(byEvType, round(TOTAL_COST/sum(TOTAL_COST) * 100, 2))
@@ -320,7 +327,7 @@ byEvType$pctCropCost <- with(byEvType, round(CROP_COST/sum(CROP_COST) * 100, 2))
 
 Let's create a table showing the 20 most important event types in term of casualties.
 ```{r healthResults, results="asis"}
-tmp <- byEvType[with(byEvType, order(-CASUALTIES)),c("EVTYPE","INJURIES","pctInjuries","FATALITIES","pctFatalities","CASUALTIES","pctCasualities")]
+tmp <- byEvType[with(byEvType, order(-CASUALTIES)),c("EVTYPE","INJURIES","pctInjuries","FATALITIES","pctFatalities","CASUALTIES","pctCasualties")]
 tmp <- tmp[1:20,]
 tmp2 <- tmp
 colnames(tmp2) <- c("Type of Event", "Injuries", "%", "Fatalities", "%", "Total", "%")
@@ -330,7 +337,7 @@ print(xtable(tmp2, caption="US Casualties From Weather Event, 1950-2011"),type="
 And put the total number of casualities per event type on a chart.
 ```{r healthPlot, fig.align='center', fig.width=10, fig.height=10}
 tmp <- tmp[order(tmp$CASUALTIES),]
-labels <- paste(tmp$EVTYPE, format(tmp$pctCasualities,digits=2))  # add percents to labels 
+labels <- paste(tmp$EVTYPE, format(tmp$pctCasualties,digits=2))  # add percents to labels 
 labels <- paste(labels, "%", sep = "")  # ad % to labels 
 
 par(las=1, mar=c(5,10,4,2))
@@ -401,17 +408,25 @@ The total cost over the 61 years period analyzed (without inflation nor cost of 
 #plot(y$CASUALTIES, names.arg=y$YEAR, axisnames=T, horiz=F,las=1,cex.names=.4)
 ```
 
+```{r discussion}
+c1 <- round(byEvType[order(-byEvType$TOTAL_COST),"pctTotalCost"][1])
+c2 <- round(byEvType[order(-byEvType$TOTAL_COST),"pctTotalCost"][2])
+c3 <- round(byEvType[order(-byEvType$TOTAL_COST),"pctTotalCost"][3])
+h1 <- round(byEvType[order(-byEvType$CASUALTIES),"pctCasualties"][1])
+```
+
 ### Discussion
 
-Flood has the greatest economic impact (32%), followed by Hurricanes (19%) and Tornadoes(12%). Preventive measures should focus on these events, specially floods, for example in improving the management of water flow.
+Flood has the greatest economic impact (```r c1```%), followed by Hurricanes (```r c2```%) and Tornadoes(```r c3```%). Preventive measures should focus on these events, specially floods, for example in improving the management of water flow.
 
-Concerning population health, tornadoes creates 65% of the casualties, far above the rest of the events. Preventive actions could for example be focused on detecting early signs, alerting populations, and better shelters.  
+Concerning population health, tornadoes create ```r h1```% of the casualties, far above the rest of the events. Preventive actions could for example be focused on detecting early signs, alerting populations, and better shelters.  
 
 It would be interesting to further group events by types relating to the same prevention measures. 
 
 Furthermore, an analysis of the progression of the main event types over time could determine trends and help better selecting the most relevant measures to address these trends.
 
 Finally, the calculated costs should be adjusted to reflect current costs, considering inflation over time and the comparative cost of life.
+
 
 ### Conclusion
 
@@ -420,6 +435,7 @@ This brief analysis prepared for the second assignment of Coursera "Reproducible
 Tornadoes, floods, and hurricanes show the greatest impact on economy and on health. Prevention efforts should therefore be focused on these events.
 
 This document was generated on `r date` at `r time`.
+
 
 ### References
 

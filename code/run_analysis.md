@@ -145,7 +145,7 @@ print (xtable(tt,caption="-ROPDMGEXP variable"), type="html", include.rownames=F
 ```
 
 <!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
-<!-- Sun Jun 22 14:41:26 2014 -->
+<!-- Sun Jun 22 15:24:58 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> -ROPDMGEXP variable </CAPTION>
 <TR> <TH> Value </TH> <TH> Count Prop </TH> <TH> Count Crop </TH>  </TR>
@@ -288,18 +288,25 @@ dataset.tidy$EVTYPE <- gsub("^WINTER WEATHER.+$","WINTER WEATHER",dataset.tidy$E
 dataset.tidy$EVTYPE <- gsub("^WINTER STORM.+$","WINTER STORM",dataset.tidy$EVTYPE)
 dataset.tidy$EVTYPE <- gsub("^WIND .+$","WIND",dataset.tidy$EVTYPE)
 dataset.tidy$EVTYPE <- gsub("WND","WIND",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("HEAT WAVE","HEAT",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("WILDFIRE","WILD FIRE",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("HIGH ","",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("EXCESSIVE ","",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("HEAVY ","",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("WINTER SNOW","SNOW",dataset.tidy$EVTYPE)
+dataset.tidy$EVTYPE <- gsub("RIVER FLOOD","FLOOD",dataset.tidy$EVTYPE)
 dataset.tidy$EVTYPE <- gsub("^FROST.+$","FROST",dataset.tidy$EVTYPE)
 dataset.tidy$EVTYPE <- gsub("^LANDSLIDE.+$","LANDSLIDE",dataset.tidy$EVTYPE)
 #sort(unique(dataset.tidy$EVTYPE))
 nev1 <- length(sort(unique(dataset.tidy$EVTYPE)))
 ```
 
-We have now ``400`` distinct event types. Note that these transformations are heuristic and that further work should be done to properly regroup events, including selecting the most relevant event when several are reported in the same record.
+We have now ``376`` distinct event types. Note that these transformations are heuristic and that further work should be done to properly regroup events, including selecting the most relevant event when several are reported in the same record.
 
 
 #### Grouping for preparing the analysis
 
-We can now create analysis datasets by grouping the different outcome by event type, state, and year.
+We can now create analysis datasets by grouping the different outcomes by event type, state, and year.
 
 ```r
 byEvType <- subset(dataset.tidy, select=c(EVTYPE, INJURIES, FATALITIES, CASUALTIES, PROP_COST, CROP_COST, TOTAL_COST))
@@ -321,7 +328,7 @@ byYear <- aggregate(. ~ YEAR, data = byYear, FUN="sum")
 Let's add some percent for relevant columns.
 
 ```r
-byEvType$pctCasualities <- with(byEvType, round(CASUALTIES/sum(CASUALTIES) * 100, 2))
+byEvType$pctCasualties <- with(byEvType, round(CASUALTIES/sum(CASUALTIES) * 100, 2))
 byEvType$pctInjuries <- with(byEvType, round(INJURIES/sum(INJURIES) * 100, 2))
 byEvType$pctFatalities <- with(byEvType, round(FATALITIES/sum(FATALITIES) * 100, 2))
 byEvType$pctTotalCost <- with(byEvType, round(TOTAL_COST/sum(TOTAL_COST) * 100, 2))
@@ -344,7 +351,7 @@ byEvType$pctCropCost <- with(byEvType, round(CROP_COST/sum(CROP_COST) * 100, 2))
 Let's create a table showing the 20 most important event types in term of casualties.
 
 ```r
-tmp <- byEvType[with(byEvType, order(-CASUALTIES)),c("EVTYPE","INJURIES","pctInjuries","FATALITIES","pctFatalities","CASUALTIES","pctCasualities")]
+tmp <- byEvType[with(byEvType, order(-CASUALTIES)),c("EVTYPE","INJURIES","pctInjuries","FATALITIES","pctFatalities","CASUALTIES","pctCasualties")]
 tmp <- tmp[1:20,]
 tmp2 <- tmp
 colnames(tmp2) <- c("Type of Event", "Injuries", "%", "Fatalities", "%", "Total", "%")
@@ -352,37 +359,37 @@ print(xtable(tmp2, caption="US Casualties From Weather Event, 1950-2011"),type="
 ```
 
 <!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
-<!-- Sun Jun 22 14:44:11 2014 -->
+<!-- Sun Jun 22 15:27:46 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> US Casualties From Weather Event, 1950-2011 </CAPTION>
 <TR> <TH> Type of Event </TH> <TH> Injuries </TH> <TH> % </TH> <TH> Fatalities </TH> <TH> % </TH> <TH> Total </TH> <TH> % </TH>  </TR>
   <TR> <TD> TORNADO </TD> <TD align="right"> 91339 </TD> <TD align="right"> 65.02 </TD> <TD align="right"> 5655 </TD> <TD align="right"> 37.36 </TD> <TD align="right"> 96994 </TD> <TD align="right"> 62.33 </TD> </TR>
+  <TR> <TD> HEAT </TD> <TD align="right"> 9054 </TD> <TD align="right"> 6.45 </TD> <TD align="right"> 3031 </TD> <TD align="right"> 20.03 </TD> <TD align="right"> 12085 </TD> <TD align="right"> 7.77 </TD> </TR>
   <TR> <TD> THUNDERSTORM </TD> <TD align="right"> 9507 </TD> <TD align="right"> 6.77 </TD> <TD align="right"> 711 </TD> <TD align="right"> 4.70 </TD> <TD align="right"> 10218 </TD> <TD align="right"> 6.57 </TD> </TR>
-  <TR> <TD> EXCESSIVE HEAT </TD> <TD align="right"> 6525 </TD> <TD align="right"> 4.65 </TD> <TD align="right"> 1920 </TD> <TD align="right"> 12.69 </TD> <TD align="right"> 8445 </TD> <TD align="right"> 5.43 </TD> </TR>
-  <TR> <TD> FLOOD </TD> <TD align="right"> 6791 </TD> <TD align="right"> 4.83 </TD> <TD align="right"> 478 </TD> <TD align="right"> 3.16 </TD> <TD align="right"> 7269 </TD> <TD align="right"> 4.67 </TD> </TR>
+  <TR> <TD> FLOOD </TD> <TD align="right"> 6794 </TD> <TD align="right"> 4.84 </TD> <TD align="right"> 482 </TD> <TD align="right"> 3.18 </TD> <TD align="right"> 7276 </TD> <TD align="right"> 4.68 </TD> </TR>
   <TR> <TD> LIGHTNING </TD> <TD align="right"> 5232 </TD> <TD align="right"> 3.72 </TD> <TD align="right"> 817 </TD> <TD align="right"> 5.40 </TD> <TD align="right"> 6049 </TD> <TD align="right"> 3.89 </TD> </TR>
-  <TR> <TD> HEAT </TD> <TD align="right"> 2150 </TD> <TD align="right"> 1.53 </TD> <TD align="right"> 939 </TD> <TD align="right"> 6.20 </TD> <TD align="right"> 3089 </TD> <TD align="right"> 1.99 </TD> </TR>
   <TR> <TD> FLASH FLOOD </TD> <TD align="right"> 1800 </TD> <TD align="right"> 1.28 </TD> <TD align="right"> 1035 </TD> <TD align="right"> 6.84 </TD> <TD align="right"> 2835 </TD> <TD align="right"> 1.82 </TD> </TR>
   <TR> <TD> ICE </TD> <TD align="right"> 2115 </TD> <TD align="right"> 1.51 </TD> <TD align="right">  96 </TD> <TD align="right"> 0.63 </TD> <TD align="right"> 2211 </TD> <TD align="right"> 1.42 </TD> </TR>
-  <TR> <TD> HIGH WIND </TD> <TD align="right"> 1449 </TD> <TD align="right"> 1.03 </TD> <TD align="right"> 288 </TD> <TD align="right"> 1.90 </TD> <TD align="right"> 1737 </TD> <TD align="right"> 1.12 </TD> </TR>
+  <TR> <TD> WIND </TD> <TD align="right"> 1535 </TD> <TD align="right"> 1.09 </TD> <TD align="right"> 312 </TD> <TD align="right"> 2.06 </TD> <TD align="right"> 1847 </TD> <TD align="right"> 1.19 </TD> </TR>
   <TR> <TD> WINTER STORM </TD> <TD align="right"> 1353 </TD> <TD align="right"> 0.96 </TD> <TD align="right"> 217 </TD> <TD align="right"> 1.43 </TD> <TD align="right"> 1570 </TD> <TD align="right"> 1.01 </TD> </TR>
+  <TR> <TD> WILD FIRE </TD> <TD align="right"> 1456 </TD> <TD align="right"> 1.04 </TD> <TD align="right">  87 </TD> <TD align="right"> 0.57 </TD> <TD align="right"> 1543 </TD> <TD align="right"> 0.99 </TD> </TR>
   <TR> <TD> HURRICANE </TD> <TD align="right"> 1328 </TD> <TD align="right"> 0.95 </TD> <TD align="right"> 135 </TD> <TD align="right"> 0.89 </TD> <TD align="right"> 1463 </TD> <TD align="right"> 0.94 </TD> </TR>
   <TR> <TD> HAIL </TD> <TD align="right"> 1358 </TD> <TD align="right"> 0.97 </TD> <TD align="right">  15 </TD> <TD align="right"> 0.10 </TD> <TD align="right"> 1373 </TD> <TD align="right"> 0.88 </TD> </TR>
-  <TR> <TD> HEAVY SNOW </TD> <TD align="right"> 1029 </TD> <TD align="right"> 0.73 </TD> <TD align="right"> 127 </TD> <TD align="right"> 0.84 </TD> <TD align="right"> 1156 </TD> <TD align="right"> 0.74 </TD> </TR>
+  <TR> <TD> SNOW </TD> <TD align="right"> 1134 </TD> <TD align="right"> 0.81 </TD> <TD align="right"> 140 </TD> <TD align="right"> 0.93 </TD> <TD align="right"> 1274 </TD> <TD align="right"> 0.82 </TD> </TR>
   <TR> <TD> RIP CURRENT </TD> <TD align="right"> 529 </TD> <TD align="right"> 0.38 </TD> <TD align="right"> 577 </TD> <TD align="right"> 3.81 </TD> <TD align="right"> 1106 </TD> <TD align="right"> 0.71 </TD> </TR>
-  <TR> <TD> WILDFIRE </TD> <TD align="right"> 911 </TD> <TD align="right"> 0.65 </TD> <TD align="right">  75 </TD> <TD align="right"> 0.50 </TD> <TD align="right"> 986 </TD> <TD align="right"> 0.63 </TD> </TR>
   <TR> <TD> BLIZZARD </TD> <TD align="right"> 805 </TD> <TD align="right"> 0.57 </TD> <TD align="right"> 101 </TD> <TD align="right"> 0.67 </TD> <TD align="right"> 906 </TD> <TD align="right"> 0.58 </TD> </TR>
   <TR> <TD> FOG </TD> <TD align="right"> 734 </TD> <TD align="right"> 0.52 </TD> <TD align="right">  62 </TD> <TD align="right"> 0.41 </TD> <TD align="right"> 796 </TD> <TD align="right"> 0.51 </TD> </TR>
   <TR> <TD> WINTER WEATHER </TD> <TD align="right"> 538 </TD> <TD align="right"> 0.38 </TD> <TD align="right">  61 </TD> <TD align="right"> 0.40 </TD> <TD align="right"> 599 </TD> <TD align="right"> 0.38 </TD> </TR>
-  <TR> <TD> WILD FIRE </TD> <TD align="right"> 545 </TD> <TD align="right"> 0.39 </TD> <TD align="right">  12 </TD> <TD align="right"> 0.08 </TD> <TD align="right"> 557 </TD> <TD align="right"> 0.36 </TD> </TR>
-  <TR> <TD> HEAT WAVE </TD> <TD align="right"> 379 </TD> <TD align="right"> 0.27 </TD> <TD align="right"> 172 </TD> <TD align="right"> 1.14 </TD> <TD align="right"> 551 </TD> <TD align="right"> 0.35 </TD> </TR>
+  <TR> <TD> DUST STORM </TD> <TD align="right"> 440 </TD> <TD align="right"> 0.31 </TD> <TD align="right">  22 </TD> <TD align="right"> 0.15 </TD> <TD align="right"> 462 </TD> <TD align="right"> 0.30 </TD> </TR>
+  <TR> <TD> TROPICAL STORM </TD> <TD align="right"> 383 </TD> <TD align="right"> 0.27 </TD> <TD align="right">  66 </TD> <TD align="right"> 0.44 </TD> <TD align="right"> 449 </TD> <TD align="right"> 0.29 </TD> </TR>
+  <TR> <TD> AVALANCHE </TD> <TD align="right"> 170 </TD> <TD align="right"> 0.12 </TD> <TD align="right"> 224 </TD> <TD align="right"> 1.48 </TD> <TD align="right"> 394 </TD> <TD align="right"> 0.25 </TD> </TR>
    </TABLE>
 
 And put the total number of casualities per event type on a chart.
 
 ```r
 tmp <- tmp[order(tmp$CASUALTIES),]
-labels <- paste(tmp$EVTYPE, format(tmp$pctCasualities,digits=2))  # add percents to labels 
+labels <- paste(tmp$EVTYPE, format(tmp$pctCasualties,digits=2))  # add percents to labels 
 labels <- paste(labels, "%", sep = "")  # ad % to labels 
 
 par(las=1, mar=c(5,10,4,2))
@@ -425,11 +432,11 @@ print (xtable(tmp2, caption="US Weather Events Costs (billions USD), 1950-2011")
 ```
 
 <!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
-<!-- Sun Jun 22 14:44:11 2014 -->
+<!-- Sun Jun 22 15:27:46 2014 -->
 <TABLE border=1>
 <CAPTION ALIGN="bottom"> US Weather Events Costs (billions USD), 1950-2011 </CAPTION>
 <TR> <TH> Type of Event </TH> <TH> Property </TH> <TH> % </TH> <TH> Crop </TH> <TH> % </TH> <TH> Total </TH> <TH> % </TH>  </TR>
-  <TR> <TD> FLOOD </TD> <TD align="right"> 144.78 </TD> <TD align="right"> 33.88 </TD> <TD align="right"> 5.78 </TD> <TD align="right"> 11.80 </TD> <TD align="right"> 150.57 </TD> <TD align="right"> 31.61 </TD> </TR>
+  <TR> <TD> FLOOD </TD> <TD align="right"> 150.02 </TD> <TD align="right"> 35.11 </TD> <TD align="right"> 10.84 </TD> <TD align="right"> 22.11 </TD> <TD align="right"> 160.86 </TD> <TD align="right"> 33.77 </TD> </TR>
   <TR> <TD> HURRICANE </TD> <TD align="right"> 84.76 </TD> <TD align="right"> 19.83 </TD> <TD align="right"> 5.52 </TD> <TD align="right"> 11.25 </TD> <TD align="right"> 90.27 </TD> <TD align="right"> 18.95 </TD> </TR>
   <TR> <TD> TORNADO </TD> <TD align="right"> 58.54 </TD> <TD align="right"> 13.70 </TD> <TD align="right"> 0.37 </TD> <TD align="right"> 0.75 </TD> <TD align="right"> 58.91 </TD> <TD align="right"> 12.37 </TD> </TR>
   <TR> <TD> STORM SURGE </TD> <TD align="right"> 43.32 </TD> <TD align="right"> 10.14 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 43.32 </TD> <TD align="right"> 9.09 </TD> </TR>
@@ -437,18 +444,18 @@ print (xtable(tmp2, caption="US Weather Events Costs (billions USD), 1950-2011")
   <TR> <TD> FLASH FLOOD </TD> <TD align="right"> 16.91 </TD> <TD align="right"> 3.96 </TD> <TD align="right"> 1.53 </TD> <TD align="right"> 3.12 </TD> <TD align="right"> 18.44 </TD> <TD align="right"> 3.87 </TD> </TR>
   <TR> <TD> DROUGHT </TD> <TD align="right"> 1.05 </TD> <TD align="right"> 0.24 </TD> <TD align="right"> 13.97 </TD> <TD align="right"> 28.50 </TD> <TD align="right"> 15.02 </TD> <TD align="right"> 3.15 </TD> </TR>
   <TR> <TD> THUNDERSTORM </TD> <TD align="right"> 10.97 </TD> <TD align="right"> 2.57 </TD> <TD align="right"> 1.27 </TD> <TD align="right"> 2.59 </TD> <TD align="right"> 12.24 </TD> <TD align="right"> 2.57 </TD> </TR>
-  <TR> <TD> RIVER FLOOD </TD> <TD align="right"> 5.24 </TD> <TD align="right"> 1.23 </TD> <TD align="right"> 5.06 </TD> <TD align="right"> 10.32 </TD> <TD align="right"> 10.29 </TD> <TD align="right"> 2.16 </TD> </TR>
   <TR> <TD> ICE </TD> <TD align="right"> 3.97 </TD> <TD align="right"> 0.93 </TD> <TD align="right"> 5.03 </TD> <TD align="right"> 10.25 </TD> <TD align="right"> 9.00 </TD> <TD align="right"> 1.89 </TD> </TR>
   <TR> <TD> TROPICAL STORM </TD> <TD align="right"> 7.71 </TD> <TD align="right"> 1.81 </TD> <TD align="right"> 0.69 </TD> <TD align="right"> 1.42 </TD> <TD align="right"> 8.41 </TD> <TD align="right"> 1.77 </TD> </TR>
+  <TR> <TD> WILD FIRE </TD> <TD align="right"> 7.77 </TD> <TD align="right"> 1.82 </TD> <TD align="right"> 0.40 </TD> <TD align="right"> 0.82 </TD> <TD align="right"> 8.17 </TD> <TD align="right"> 1.71 </TD> </TR>
   <TR> <TD> WINTER STORM </TD> <TD align="right"> 6.75 </TD> <TD align="right"> 1.58 </TD> <TD align="right"> 0.03 </TD> <TD align="right"> 0.07 </TD> <TD align="right"> 6.78 </TD> <TD align="right"> 1.42 </TD> </TR>
-  <TR> <TD> HIGH WIND </TD> <TD align="right"> 6.00 </TD> <TD align="right"> 1.40 </TD> <TD align="right"> 0.69 </TD> <TD align="right"> 1.40 </TD> <TD align="right"> 6.69 </TD> <TD align="right"> 1.40 </TD> </TR>
-  <TR> <TD> WILDFIRE </TD> <TD align="right"> 4.77 </TD> <TD align="right"> 1.12 </TD> <TD align="right"> 0.30 </TD> <TD align="right"> 0.60 </TD> <TD align="right"> 5.06 </TD> <TD align="right"> 1.06 </TD> </TR>
+  <TR> <TD> WIND </TD> <TD align="right"> 6.01 </TD> <TD align="right"> 1.41 </TD> <TD align="right"> 0.69 </TD> <TD align="right"> 1.40 </TD> <TD align="right"> 6.70 </TD> <TD align="right"> 1.41 </TD> </TR>
   <TR> <TD> STORM SURGE TIDE </TD> <TD align="right"> 4.64 </TD> <TD align="right"> 1.09 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 4.64 </TD> <TD align="right"> 0.97 </TD> </TR>
-  <TR> <TD> HEAVY RAIN </TD> <TD align="right"> 3.23 </TD> <TD align="right"> 0.76 </TD> <TD align="right"> 0.80 </TD> <TD align="right"> 1.62 </TD> <TD align="right"> 4.03 </TD> <TD align="right"> 0.85 </TD> </TR>
-  <TR> <TD> WILD FIRE </TD> <TD align="right"> 3.00 </TD> <TD align="right"> 0.70 </TD> <TD align="right"> 0.11 </TD> <TD align="right"> 0.22 </TD> <TD align="right"> 3.11 </TD> <TD align="right"> 0.65 </TD> </TR>
+  <TR> <TD> RAIN </TD> <TD align="right"> 3.24 </TD> <TD align="right"> 0.76 </TD> <TD align="right"> 0.81 </TD> <TD align="right"> 1.64 </TD> <TD align="right"> 4.04 </TD> <TD align="right"> 0.85 </TD> </TR>
   <TR> <TD> EXTREME COLD </TD> <TD align="right"> 0.07 </TD> <TD align="right"> 0.02 </TD> <TD align="right"> 1.31 </TD> <TD align="right"> 2.68 </TD> <TD align="right"> 1.38 </TD> <TD align="right"> 0.29 </TD> </TR>
   <TR> <TD> FROST </TD> <TD align="right"> 0.01 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 1.16 </TD> <TD align="right"> 2.37 </TD> <TD align="right"> 1.17 </TD> <TD align="right"> 0.25 </TD> </TR>
-  <TR> <TD> HEAVY SNOW </TD> <TD align="right"> 0.95 </TD> <TD align="right"> 0.22 </TD> <TD align="right"> 0.13 </TD> <TD align="right"> 0.27 </TD> <TD align="right"> 1.09 </TD> <TD align="right"> 0.23 </TD> </TR>
+  <TR> <TD> SNOW </TD> <TD align="right"> 0.98 </TD> <TD align="right"> 0.23 </TD> <TD align="right"> 0.13 </TD> <TD align="right"> 0.27 </TD> <TD align="right"> 1.12 </TD> <TD align="right"> 0.23 </TD> </TR>
+  <TR> <TD> LIGHTNING </TD> <TD align="right"> 0.93 </TD> <TD align="right"> 0.22 </TD> <TD align="right"> 0.01 </TD> <TD align="right"> 0.02 </TD> <TD align="right"> 0.95 </TD> <TD align="right"> 0.20 </TD> </TR>
+  <TR> <TD> HEAT </TD> <TD align="right"> 0.02 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.90 </TD> <TD align="right"> 1.83 </TD> <TD align="right"> 0.92 </TD> <TD align="right"> 0.19 </TD> </TR>
    </TABLE>
 
 Then, the plot of the total cost:
@@ -482,11 +489,19 @@ The total cost over the 61 years period analyzed (without inflation nor cost of 
 
 
 
+
+```r
+c1 <- round(byEvType[order(-byEvType$TOTAL_COST),"pctTotalCost"][1])
+c2 <- round(byEvType[order(-byEvType$TOTAL_COST),"pctTotalCost"][2])
+c3 <- round(byEvType[order(-byEvType$TOTAL_COST),"pctTotalCost"][3])
+h1 <- round(byEvType[order(-byEvType$CASUALTIES),"pctCasualties"][1])
+```
+
 ### Discussion
 
-Flood has the greatest economic impact (32%), followed by Hurricanes (19%) and Tornadoes(12%). Preventive measures should focus on these events, specially floods, for example in improving the management of water flow.
+Flood has the greatest economic impact (``34``%), followed by Hurricanes (``19``%) and Tornadoes(``12``%). Preventive measures should focus on these events, specially floods, for example in improving the management of water flow.
 
-Concerning population health, tornadoes creates 65% of the casualties, far above the rest of the events. Preventive actions could for example be focused on detecting early signs, alerting populations, and better shelters.  
+Concerning population health, tornadoes create ``62``% of the casualties, far above the rest of the events. Preventive actions could for example be focused on detecting early signs, alerting populations, and better shelters.  
 
 It would be interesting to further group events by types relating to the same prevention measures. 
 
@@ -494,13 +509,15 @@ Furthermore, an analysis of the progression of the main event types over time co
 
 Finally, the calculated costs should be adjusted to reflect current costs, considering inflation over time and the comparative cost of life.
 
+
 ### Conclusion
 
 This brief analysis prepared for the second assignment of Coursera "Reproducible Research" aims at determining which weather events are most harmful to the population health and to the economy, from a US survey of weather events between 1950 and 2011.
 
 Tornadoes, floods, and hurricanes show the greatest impact on economy and on health. Prevention efforts should therefore be focused on these events.
 
-This document was generated on 22-Jun-2014 at 14:41:20.
+This document was generated on 22-Jun-2014 at 15:24:53.
+
 
 ### References
 
